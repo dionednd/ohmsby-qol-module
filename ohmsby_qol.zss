@@ -1,0 +1,104 @@
+# == OHMSBY Style QOL Patches v0.0.1 == #
+#
+#	by dionednd
+#
+
+# == Changelog == #
+#
+#	v 0.0.1
+#	- added 7 QOL changes (first three options can work for other characters)
+
+# == Global States == #
+
+[StateDef -4]
+
+	# CONFIG
+
+	# Hitpause Animations. Animates hitpauses, making gethit states look more alive than robotic.
+	let animate_hitpause = 1;
+
+	# Air Strafe Tilt. tilts the character back or forward depending on player velocity. looks cool and modern.
+	let air_strafe_tilt = 1;
+
+	# Air Hitstun Tilt. tilts the character back or forward depending on player velocity. looks cool and modern.
+	let air_hitstun_tilt = 1;
+
+
+
+	# Astral Text Repositioning. Fixes Astral Cut-In Text for 16:9 Ratio. does nothing for other ratios.
+	let astral_text_repos = 1;
+
+	# Astral Camera Fix. Fixes astral heat camera zoom by normalizing it back to 1.0, preventing the camera from showing outside boundaries of background sprites.
+	let astral_camera_fix = 1;
+
+	# Astral Refresh. Allows you to use Astral Heat once per round.
+	let astral_refresh = 0;
+
+	# Burst Refresh. refreshes your burst every round.
+	let burst_refresh = 0;
+
+	if $animate_hitpause && MoveType = H
+	{
+		AssertSpecial{flag:AnimateHitpause}
+	}
+
+	# Astral Cut In Text for 16:9 Ratio
+	if roundstate = 0 && map(BBTAG_ACI_Repos) && $astral_text_repos
+	{
+		map(BBTAG_ACI_Repos) := 0;
+	}
+
+	if NumExplod(7008) = 2 && !map(BBTAG_ACI_Repos)  && gamewidth/gameheight = [1.7, 1.78] && $astral_text_repos
+	{
+		for i=0; NumExplod(7008); 1
+		{
+			if ExplodVar(7008, $i,anim) = 7009
+			{
+				# edit position with math
+				ModifyExplod{id:7008;index:$i;pos:60, 140;postype:left}
+			}
+		}
+		map(BBTAG_ACI_Repos) := 1;
+	}
+
+	if statetype=A && roundstate = 2
+	{
+		if (movetype=I && $air_strafe_tilt)
+		{
+			# use vel x and vel y to determine angle. tilt slightly forward if vel x is positive, tilt slightly backward if vel x is positive. idk how vel y should affect the tilting, but you are the smart one here, so you do the calculations.
+			AngleSet{value:clamp((vel x * -3.0) + (vel y * 0.25), -18, 18)}
+		}
+		else{AngleSet{value:0}}
+
+		if (movetype=H && $air_hitstun_tilt) && !incustomstate
+		{
+			AngleSet{value:clamp((vel x * -.25) + (vel y * (vel x*-.25)), -180, 180)}
+		}
+		else{AngleSet{value:0}}
+		AngleDraw{}
+	}
+
+	# Astral Camera Fix
+
+	if roundstate = 0 && map(astraldone)
+	{
+		map(astraldone) := 1;
+	}
+
+	if var(20) = 1 && stateno = [3900,3909] && $astral_camera_fix
+	{
+		Zoom{scale:1.0 / camerazoom;camerabound:0;stagebound:1;lag:0;}
+	}
+
+	# Astral Refresh
+
+	if $astral_refresh && roundstate = 0 && var(21) = 1
+	{
+		var(21) := 0;
+	}
+
+	# Burst Refresh
+	if $burst_refresh && RoundsExisted > 0 && var(58) < 10000 && roundstate < 2
+	{
+		var(58) := 10000;
+	}
