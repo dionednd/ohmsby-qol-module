@@ -1,12 +1,14 @@
-# == OHMSBY Style QOL Patches v0.0.1 == #
+# == OHMSBY Style QOL Patches v0.0.1a == #
 #
 #	by dionednd
 #
 
 # == Changelog == #
 #
-#	v 0.0.1
+#	v0.0.1
 #	- added 7 QOL changes (first three options can work for other characters)
+#	v0.0.1a
+#	- fixed tilting not working
 
 # == Global States == #
 
@@ -48,7 +50,7 @@
 		map(BBTAG_ACI_Repos) := 0;
 	}
 
-	if NumExplod(7008) = 2 && !map(BBTAG_ACI_Repos)  && gamewidth/gameheight = [1.7, 1.78] && $astral_text_repos
+	if NumExplod(7008) = 2 && !map(BBTAG_ACI_Repos)  && gamewidth/gameheight = [1.77, 1.78] && $astral_text_repos
 	{
 		for i=0; NumExplod(7008); 1
 		{
@@ -68,13 +70,11 @@
 			# use vel x and vel y to determine angle. tilt slightly forward if vel x is positive, tilt slightly backward if vel x is positive. idk how vel y should affect the tilting, but you are the smart one here, so you do the calculations.
 			AngleSet{value:clamp((vel x * -3.0) + (vel y * 0.25), -18, 18)}
 		}
-		else{AngleSet{value:0}}
-
-		if (movetype=H && $air_hitstun_tilt) && !incustomstate
+		else if (movetype=H && $air_hitstun_tilt)
 		{
-			AngleSet{value:clamp((vel x * -.25) + (vel y * (vel x*-.25)), -180, 180)}
+			AngleSet{value:clamp((vel x * -.35) + (vel y * (vel x*-.35)), -180, 180)}
 		}
-		else{AngleSet{value:0}}
+		else if movetype=A {AngleSet{value:0}}
 		AngleDraw{}
 	}
 
