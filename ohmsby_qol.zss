@@ -1,4 +1,4 @@
-# == OHMSBY Style QOL Patches v0.0.1a == #
+# == OHMSBY Style QOL Patches v0.0.1b == #
 #
 #	by dionednd
 #
@@ -9,6 +9,8 @@
 #	- added 7 QOL changes (first three options can work for other characters)
 #	v0.0.1a
 #	- fixed tilting not working
+#	v0.0.1b
+#	- changed astral heat text position and fixed astral heat text position for most characters that didn't have their astral heat text position fixed
 
 # == Global States == #
 
@@ -50,17 +52,17 @@
 		map(BBTAG_ACI_Repos) := 0;
 	}
 
-	if NumExplod(7008) = 2 && !map(BBTAG_ACI_Repos)  && gamewidth/gameheight = [1.77, 1.78] && $astral_text_repos
+	if NumExplod(7008) > 0 && !map(BBTAG_ACI_Repos)  && gamewidth/gameheight = [1.77, 1.78] && $astral_text_repos
 	{
 		for i=0; NumExplod(7008); 1
 		{
 			if ExplodVar(7008, $i,anim) = 7009
 			{
 				# edit position with math
-				ModifyExplod{id:7008;index:$i;pos:60, 140;postype:left}
+				ModifyExplod{id:7008;index:$i;pos:25, 140;postype:left}
+				map(BBTAG_ACI_Repos) := 1;
 			}
 		}
-		map(BBTAG_ACI_Repos) := 1;
 	}
 
 	if statetype=A && roundstate = 2
