@@ -1,4 +1,4 @@
-# == OHMSBY Style QOL Patches v0.0.1b == #
+# == OHMSBY Style QOL Patches v0.0.2 == #
 #
 #	by dionednd
 #
@@ -11,6 +11,12 @@
 #	- fixed tilting not working
 #	v0.0.1b
 #	- changed astral heat text position and fixed astral heat text position for most characters that didn't have their astral heat text position fixed
+#	v0.0.2
+#	- added fix for burst icons in tag/simul teammode
+#	- added option to disable ohmsby style action messages (counter,perfect,not over yet, negative penalty, etc.)
+#	- added offset option for burst icons (you can now move your burst icons with this module!)
+#	- added 2 styles for tag team mode burst icons (teamleader only / semi-trans for partners)
+#	- added option to disable bonus strike mechanic from characters that have it
 
 # == Global States == #
 
@@ -58,7 +64,6 @@
 		{
 			if ExplodVar(7008, $i,anim) = 7009
 			{
-				# edit position with math
 				ModifyExplod{id:7008;index:$i;pos:25, 140;postype:left}
 				map(BBTAG_ACI_Repos) := 1;
 			}
@@ -103,4 +108,207 @@
 	if $burst_refresh && RoundsExisted > 0 && var(58) < 10000 && roundstate < 2
 	{
 		var(58) := 10000;
+	}
+
+[StateDef +1]
+
+	# Fix Tag/Simul Burst Icons. Fixes overlapping burst icons in tag and simul.
+	let burst_icon_fix = 1;
+
+	# Tag Burst Icon Style. (0 = show teamleader's only, 1 = show all burst icons but have tagged out players' burst icons semi-transparent)
+	let burst_icon_tagstyle = 1;
+
+	# Burst Icon Offset (Burst Icon Fix must be enabled.)
+	let burst_icon_offsetx_p1 = 0;
+	let burst_icon_offsety_p1 = 0;
+
+	let burst_icon_offsetx_p2 = 0;
+	let burst_icon_offsety_p2 = 0;
+
+	let burst_icon_offsetx_p3 = 0;
+	let burst_icon_offsety_p3 = 0;
+
+	let burst_icon_offsetx_p4 = 0;
+	let burst_icon_offsety_p4 = 0;
+
+	let burst_icon_offsetx_p5 = 0;
+	let burst_icon_offsety_p5 = 0;
+
+	let burst_icon_offsetx_p6 = 0;
+	let burst_icon_offsety_p6 = 0;
+
+	let burst_icon_offsetx_p7 = 0;
+	let burst_icon_offsety_p7 = 0;
+
+	let burst_icon_offsetx_p8 = 0;
+	let burst_icon_offsety_p8 = 0;
+
+	# Disable All Built-In OHMSBY Action Messages
+	let disableaction = 0;
+
+	# Disable Bonus Strike Mechanic. disables the bonus strike mechanic & action messages from some ohmsby style characters.
+	let disable_bonus_strike = 1;
+
+	if (authorname = "Ichida" || authorname = "Vinnie" || authorname = "TornilloOxidado") && $disable_bonus_strike
+	{
+		var(28):= 0;
+		if $disableaction != 1 #just in case you have disableaction set to 0 & just making sure the bonus strike mechanic action messages don't pop up
+		{
+			for i=0; NumExplod(13000); 1
+			{
+				if ExplodVar(13000,$i,anim) = [9900,9902]
+				{
+					ModifyExplod{id:13000;index:$i;pos:9999,9999;postype:back}
+				}
+			}
+		}
+	}
+
+	if isHelper(9875)
+	{
+		switch(root, playerno)
+		{
+			case 1:
+				let ox = $burst_icon_offsetx_p1;
+				let oy = $burst_icon_offsety_p1;
+			case 2:
+				let ox = $burst_icon_offsetx_p2;
+				let oy = $burst_icon_offsety_p2;
+			case 3:
+				let ox = $burst_icon_offsetx_p3;
+				let oy = $burst_icon_offsety_p3;
+			case 4:
+				let ox = $burst_icon_offsetx_p4;
+				let oy = $burst_icon_offsety_p4;
+			case 5:
+				let ox = $burst_icon_offsetx_p5;
+				let oy = $burst_icon_offsety_p5;
+			case 6:
+				let ox = $burst_icon_offsetx_p6;
+				let oy = $burst_icon_offsety_p6;
+			case 7:
+				let ox = $burst_icon_offsetx_p7;
+				let oy = $burst_icon_offsety_p7;
+			case 8:
+				let ox = $burst_icon_offsetx_p8;
+				let oy = $burst_icon_offsety_p8;
+		}
+	}
+
+	if $disableaction
+	{
+		for i=0; NumExplod(13000); 1
+		{
+			ModifyExplod{id:13000;index:$i;pos:9999,9999;postype:back}
+		}
+		ModifyExplod{id:9887;index:0;pos:9999,9999;postype:back}
+		ModifyExplod{id:27950;index:0;pos:9999,9999;postype:back}
+		ModifyExplod{id:27951;index:0;pos:9999,9999;postype:back}
+		ModifyExplod{id:9882;index:0;pos:9999,9999;postype:back}
+		if isHelper(9884)
+		{
+			if ExplodVar(-1, 0,anim) = 9884
+			{
+				let id = ExplodVar(-1, 0, id);
+				ModifyExplod{id:$id;index:0;pos:9999,9999;postype:back}
+			}
+		}
+
+		ModifyExplod{id:27944;index:0;pos:9999,9999;postype:back}
+		ModifyExplod{id:27945;index:0;pos:9999,9999;postype:back}
+	}
+
+	if isHelper(9875) && $burst_icon_fix && playerno < 9
+	{
+		if root, teammode = Tag
+		{
+			if $burst_icon_tagstyle = 0
+			{
+				if ExplodVar(-1, 0,anim) = 98755
+				{
+					let id = ExplodVar(-1, 0, id);
+					ModifyExplod{id:$id;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				}
+				ModifyExplod{id:98756;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:9876;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:98765;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:98766;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:9879;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:98799;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:9878;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:98788;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox)+((root,fvar(19))*0.046),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:9875;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:98798;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox)+((root,fvar(19))*0.046),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:98797;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:98758;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:10020;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				ModifyExplod{id:10020;index:1;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+			}
+			else if $burst_icon_tagstyle = 1
+			{
+				if ExplodVar(-1, 0,anim) = 98755
+				{
+					let id = ExplodVar(-1, 0, id);
+					ModifyExplod{id:$id;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;}
+				}
+				ModifyExplod{id:98756;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;}
+				ModifyExplod{id:9876;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,0,128)}
+				ModifyExplod{id:98765;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,0,128)}
+				ModifyExplod{id:98766;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,0,128)}
+				ModifyExplod{id:9879;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,0,128)}
+				ModifyExplod{id:98799;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,256,256)}
+				ModifyExplod{id:9878;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,0,128)}
+				ModifyExplod{id:98788;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,0,128)}
+				ModifyExplod{id:9875;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,0,128)}
+				ModifyExplod{id:98798;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,256,256)}
+				ModifyExplod{id:98797;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,256,256)}
+				ModifyExplod{id:98758;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:sub;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,256,256)}
+				ModifyExplod{id:10020;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;}
+				ModifyExplod{id:10020;index:1;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;}
+			}
+		}
+		else if root, teammode = Simul
+		{
+			if ExplodVar(-1, 0,anim) = 98755
+			{
+				let id = ExplodVar(-1, 0, id);
+				ModifyExplod{id:$id;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			}
+			ModifyExplod{id:98756;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:9876;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:98765;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:98766;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:9879;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:98799;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:9878;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:98788;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:9875;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:98798;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:98797;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:98758;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:10020;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			ModifyExplod{id:10020;index:1;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+		}
+		else
+		{
+			if ExplodVar(-1, 0,anim) = 98755
+			{
+				let id = ExplodVar(-1, 0, id);
+				ModifyExplod{id:$id;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			}
+			ModifyExplod{id:98756;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:9876;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:98765;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:98766;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:9879;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:98799;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:9878;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:98788;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy);postype:back}
+			ModifyExplod{id:9875;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:98798;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy);postype:back}
+			ModifyExplod{id:98797;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:98758;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:10020;index:0;pos:(12+$ox),(45+$oy);postype:back}
+			ModifyExplod{id:10020;index:1;pos:(12+$ox),(45+$oy);postype:back}
+		}
 	}
