@@ -1,0 +1,47 @@
+; Counter
+[Begin Action 9888]
+-1,0, 0,0, 1
+
+; Perfect
+[Begin Action 9889]
+-1,0, 0,0, 1
+
+; Grabbed
+[Begin Action 9887]
+-1,0, 0,0, 1
+
+; Warning
+[Begin Action 9880]
+-1,0, 0,0, 1
+
+; Warning Fade
+[Begin Action 9881]
+-1,0, 0,0, 1
+
+; Negative Penalty
+[Begin Action 9882]
+-1,0, 0,0, 1
+
+; Not Over Yet
+[Begin Action 9884]
+-1,0, 0,0, 1
+
+; Invalid
+[Begin Action 9885]
+-1,0, 0,0, 1
+
+; Invalid Fade
+[Begin Action 9886]
+-1,0, 0,0, 1
+
+;Ichida
+[Begin Action 9902]
+-1,0, 0,0, 1
+
+;Ichida
+[Begin Action 9900]
+-1,0, 0,0, 1
+
+;Ichida
+[Begin Action 9901]
+-1,0, 0,0, 1
