@@ -1,4 +1,4 @@
-# == OHMSBY Style QOL Patches v0.0.2 == #
+# == OHMSBY Style QOL Patches v0.0.2a == #
 #
 #	by dionednd
 #
@@ -17,6 +17,8 @@
 #	- added offset option for burst icons (you can now move your burst icons with this module!)
 #	- added 2 styles for tag team mode burst icons (teamleader only / semi-trans for partners)
 #	- added option to disable bonus strike mechanic from characters that have it
+#	v0.0.2a
+#	- removed option to disable ohmsby style action messages but provided an .air file that you can paste at the end of your character's .air file that disables action messages
 
 # == Global States == #
 
@@ -143,28 +145,22 @@
 	let burst_icon_offsetx_p8 = 0;
 	let burst_icon_offsety_p8 = 0;
 
-	# Disable All Built-In OHMSBY Action Messages
-	let disableaction = 0;
-
 	# Disable Bonus Strike Mechanic. disables the bonus strike mechanic & action messages from some ohmsby style characters.
 	let disable_bonus_strike = 1;
 
-	if (authorname = "Ichida" || authorname = "Vinnie" || authorname = "TornilloOxidado") && $disable_bonus_strike
+	ignorehitpause if (authorname = "Ichida" || authorname = "Vinnie" || authorname = "TornilloOxidado") && $disable_bonus_strike
 	{
 		var(28):= 0;
-		if $disableaction != 1 #just in case you have disableaction set to 0 & just making sure the bonus strike mechanic action messages don't pop up
+		for i=0; NumExplod(13000); 1
 		{
-			for i=0; NumExplod(13000); 1
+			if ExplodVar(13000,$i,anim) = [9900,9902]
 			{
-				if ExplodVar(13000,$i,anim) = [9900,9902]
-				{
-					ModifyExplod{id:13000;index:$i;pos:9999,9999;postype:back}
-				}
+				ModifyExplod{id:13000;index:$i;pos:9999,9999;postype:back}
 			}
 		}
 	}
 
-	if isHelper(9875)
+	ignorehitpause if isHelper(9875)
 	{
 		switch(root, playerno)
 		{
@@ -195,30 +191,7 @@
 		}
 	}
 
-	if $disableaction
-	{
-		for i=0; NumExplod(13000); 1
-		{
-			ModifyExplod{id:13000;index:$i;pos:9999,9999;postype:back}
-		}
-		ModifyExplod{id:9887;index:0;pos:9999,9999;postype:back}
-		ModifyExplod{id:27950;index:0;pos:9999,9999;postype:back}
-		ModifyExplod{id:27951;index:0;pos:9999,9999;postype:back}
-		ModifyExplod{id:9882;index:0;pos:9999,9999;postype:back}
-		if isHelper(9884)
-		{
-			if ExplodVar(-1, 0,anim) = 9884
-			{
-				let id = ExplodVar(-1, 0, id);
-				ModifyExplod{id:$id;index:0;pos:9999,9999;postype:back}
-			}
-		}
-
-		ModifyExplod{id:27944;index:0;pos:9999,9999;postype:back}
-		ModifyExplod{id:27945;index:0;pos:9999,9999;postype:back}
-	}
-
-	if isHelper(9875) && $burst_icon_fix && playerno < 9
+	ignorehitpause if isHelper(9875) && $burst_icon_fix && playerno < 9
 	{
 		if root, teammode = Tag
 		{
