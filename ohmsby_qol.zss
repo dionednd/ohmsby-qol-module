@@ -1,4 +1,4 @@
-# == OHMSBY Style QOL Patches v0.0.2a == #
+# == OHMSBY Style QOL Patches v0.0.2b == #
 #
 #	by dionednd
 #
@@ -19,7 +19,8 @@
 #	- added option to disable bonus strike mechanic from characters that have it
 #	v0.0.2a
 #	- removed option to disable ohmsby style action messages but provided an .air file that you can paste at the end of your character's .air file that disables action messages
-
+#	v0.0.2b
+#	- fixed burst X icon position not being positioned properly due to the burst icon not having an id.
 # == Global States == #
 
 [StateDef -4]
@@ -197,10 +198,15 @@
 		{
 			if $burst_icon_tagstyle = 0
 			{
-				if ExplodVar(-1, 0,anim) = 98755
+				if numExplod > 0
 				{
-					let id = ExplodVar(-1, 0, id);
-					ModifyExplod{id:$id;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+					for idx = 0; numExplod - 1; 1
+					{
+						if ExplodVar(-1, $idx, anim) = 98755
+						{
+							modifyExplod{id: -1; index: $idx; pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+						} 
+					}
 				}
 				ModifyExplod{id:98756;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
 				ModifyExplod{id:9876;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
@@ -219,10 +225,15 @@
 			}
 			else if $burst_icon_tagstyle = 1
 			{
-				if ExplodVar(-1, 0,anim) = 98755
+				if numExplod > 0
 				{
-					let id = ExplodVar(-1, 0, id);
-					ModifyExplod{id:$id;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;}
+					for idx = 0; numExplod - 1; 1
+					{
+						if ExplodVar(-1, $idx, anim) = 98755
+						{
+							modifyExplod{id: -1; index: $idx; pos:(12+$ox),(45+$oy) + 10 * (root,playerno - root,teamside);postype:back}
+						} 
+					}
 				}
 				ModifyExplod{id:98756;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;}
 				ModifyExplod{id:9876;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,0,128)}
@@ -242,10 +253,15 @@
 		}
 		else if root, teammode = Simul
 		{
-			if ExplodVar(-1, 0,anim) = 98755
+			if numExplod > 0
 			{
-				let id = ExplodVar(-1, 0, id);
-				ModifyExplod{id:$id;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+				for idx = 0; numExplod - 1; 1
+				{
+					if ExplodVar(-1, $idx, anim) = 98755
+					{
+						modifyExplod{id: -1; index: $idx; pos:(12+$ox),(45+$oy) + 10 * (root,playerno - root,teamside);postype:back}
+					} 
+				}
 			}
 			ModifyExplod{id:98756;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
 			ModifyExplod{id:9876;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
@@ -264,10 +280,15 @@
 		}
 		else
 		{
-			if ExplodVar(-1, 0,anim) = 98755
+			if numExplod > 0
 			{
-				let id = ExplodVar(-1, 0, id);
-				ModifyExplod{id:$id;index:0;pos:(12+$ox),(45+$oy);postype:back}
+				for idx = 0; numExplod - 1; 1
+				{
+					if ExplodVar(-1, $idx, anim) = 98755
+					{
+						modifyExplod{id: -1; index: $idx; pos:(12+$ox),(45+$oy);postype:back}
+					} 
+				}
 			}
 			ModifyExplod{id:98756;index:0;pos:(12+$ox),(45+$oy);postype:back}
 			ModifyExplod{id:9876;index:0;pos:(12+$ox),(45+$oy);postype:back}
