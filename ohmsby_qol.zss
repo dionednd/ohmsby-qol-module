@@ -1,4 +1,4 @@
-# == OHMSBY Style QOL Patches v0.0.2b == #
+# == OHMSBY Style QOL Patches v0.0.2c == #
 #
 #	by dionednd
 #
@@ -21,6 +21,9 @@
 #	- removed option to disable ohmsby style action messages but provided an .air file that you can paste at the end of your character's .air file that disables action messages
 #	v0.0.2b
 #	- fixed burst X icon position not being positioned properly due to the burst icon not having an id.
+#	v0.0.2c
+#	- added fix for ultra burst background.
+#	- fixed burst icon digitizer not showing up on the correct icon
 # == Global States == #
 
 [StateDef -4]
@@ -121,6 +124,20 @@
 	# Tag Burst Icon Style. (0 = show teamleader's only, 1 = show all burst icons but have tagged out players' burst icons semi-transparent)
 	let burst_icon_tagstyle = 1;
 
+	# Fix Ultra Burst & Distortion Drive Background
+	let ubdd_fix = 1;
+
+	if $ubdd_fix
+	{
+		for idx = 0; numExplod - 1; 1
+		{
+			if ExplodVar(-1, $idx, anim) = 7001
+			{
+				ModifyExplod{id:-1;index:$idx;scale:.65,.4875;pos:160,90;postype:left}
+			} 
+		}
+	}
+
 	# Burst Icon Offset (Burst Icon Fix must be enabled.)
 	let burst_icon_offsetx_p1 = 0;
 	let burst_icon_offsety_p1 = 0;
@@ -194,6 +211,9 @@
 
 	ignorehitpause if isHelper(9875) && $burst_icon_fix && playerno < 9
 	{
+		# Disable Burst Icon Digitizer, then just replace em with a clone that works for this module instead of trying to modify the original burst icon digitizer.
+		modifyExplod{id: 10020; index: 0;bindtime:0;removetime:0;}
+		modifyExplod{id: 10020; index: 1;bindtime:0;removetime:0;}
 		if root, teammode = Tag
 		{
 			if $burst_icon_tagstyle = 0
@@ -220,8 +240,10 @@
 				ModifyExplod{id:98798;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox)+((root,fvar(19))*0.046),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
 				ModifyExplod{id:98797;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
 				ModifyExplod{id:98758;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
-				ModifyExplod{id:10020;index:0;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
-				ModifyExplod{id:10020;index:1;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				if root,fvar(35) <= 0 && root,fvar(19) <= 0 && !NumHelper(2957) && root,var(50) = 1 && root,var(58) < 10000 && NumExplod(100200)<2
+				{
+					Explod{id:100200;anim:10020+(floor(root,Var(58)/50%200));scale:0.25,0.25;facing:cond(teamside = 1,1,-1);sprpriority:-7;bindtime:-1;removetime:1;pausemovetime:-1;supermovetime:-1;ownpal:1;pos:cond(root,playerno = root,TeamLeader,(12+$ox),9999),cond(root,playerno = root,TeamLeader,(45+$oy),9999);postype:back}
+				}
 			}
 			else if $burst_icon_tagstyle = 1
 			{
@@ -247,8 +269,10 @@
 				ModifyExplod{id:98798;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,256,256)}
 				ModifyExplod{id:98797;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:addalpha;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,256,256)}
 				ModifyExplod{id:98758;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;trans:sub;alpha:cond(playerno = TeamLeader,256,128),cond(playerno = TeamLeader,256,256)}
-				ModifyExplod{id:10020;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;}
-				ModifyExplod{id:10020;index:1;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back;}
+				if root,fvar(35) <= 0 && root,fvar(19) <= 0 && !NumHelper(2957) && root,var(50) = 1 && root,var(58) < 10000 && NumExplod(100200)<2
+				{
+					Explod{id:100200;anim:10020+(floor(root,Var(58)/50%200));scale:0.25,0.25;facing:cond(teamside = 1,1,-1);sprpriority:-7;bindtime:-1;removetime:1;pausemovetime:-1;supermovetime:-1;ownpal:1;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+				}
 			}
 		}
 		else if root, teammode = Simul
@@ -275,8 +299,10 @@
 			ModifyExplod{id:98798;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy) + 10 * (playerno - teamside);postype:back}
 			ModifyExplod{id:98797;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
 			ModifyExplod{id:98758;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
-			ModifyExplod{id:10020;index:0;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
-			ModifyExplod{id:10020;index:1;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			if root,fvar(35) <= 0 && root,fvar(19) <= 0 && !NumHelper(2957) && root,var(50) = 1 && root,var(58) < 10000 && NumExplod(100200)<2
+			{
+				Explod{id:100200;anim:10020+(floor(root,Var(58)/50%200));scale:0.25,0.25;facing:cond(teamside = 1,1,-1);sprpriority:-7;bindtime:-1;removetime:1;pausemovetime:-1;supermovetime:-1;ownpal:1;pos:(12+$ox),(45+$oy) + 10 * (playerno - teamside);postype:back}
+			}
 		}
 		else
 		{
@@ -302,7 +328,9 @@
 			ModifyExplod{id:98798;index:0;pos:(12+$ox)+((root,fvar(19))*0.046),(45+$oy);postype:back}
 			ModifyExplod{id:98797;index:0;pos:(12+$ox),(45+$oy);postype:back}
 			ModifyExplod{id:98758;index:0;pos:(12+$ox),(45+$oy);postype:back}
-			ModifyExplod{id:10020;index:0;pos:(12+$ox),(45+$oy);postype:back}
-			ModifyExplod{id:10020;index:1;pos:(12+$ox),(45+$oy);postype:back}
+			if root,fvar(35) <= 0 && root,fvar(19) <= 0 && !NumHelper(2957) && root,var(50) = 1 && root,var(58) < 10000 && NumExplod(100200)<2
+			{
+				Explod{id:100200;anim:10020+(floor(root,Var(58)/50%200));scale:0.25,0.25;facing:cond(teamside = 1,1,-1);sprpriority:-7;bindtime:-1;removetime:1;pausemovetime:-1;supermovetime:-1;ownpal:1;pos:(12+$ox),(45+$oy);postype:back}
+			}
 		}
 	}
