@@ -1,4 +1,4 @@
-# == OHMSBY Style QOL Patches v0.0.2c == #
+# == OHMSBY Style QOL Patches v0.0.3 == #
 #
 #	by dionednd
 #
@@ -24,11 +24,19 @@
 #	v0.0.2c
 #	- added fix for ultra burst background.
 #	- fixed burst icon digitizer not showing up on the correct icon
+#	v0.0.3
+#	- added sound volume mixer for voice channel and sfx channel
 # == Global States == #
 
 [StateDef -4]
 
 	# CONFIG
+
+	# Voice Channel Volume. set to -1 to disable. affects only the voice channel.
+	let voice_volume = 100;
+
+	# SFX Channel Volume. set to -1 to disable. affects all channels if voice channel is set to -1.
+	let sfx_volume = 75;
 
 	# Hitpause Animations. Animates hitpauses, making gethit states look more alive than robotic.
 	let animate_hitpause = 1;
@@ -38,8 +46,6 @@
 
 	# Air Hitstun Tilt. tilts the character back or forward depending on player velocity. looks cool and modern.
 	let air_hitstun_tilt = 1;
-
-
 
 	# Astral Text Repositioning. Fixes Astral Cut-In Text for 16:9 Ratio. does nothing for other ratios.
 	let astral_text_repos = 1;
@@ -52,6 +58,16 @@
 
 	# Burst Refresh. refreshes your burst every round.
 	let burst_refresh = 0;
+
+	if $sfx_volume != -1
+	{
+		modifySnd{channel:-1;volume:$sfx_volume;}
+	}
+
+	if $voice_volume != -1
+	{
+		modifySnd{channel:0;volume:$voice_volume;}
+	}
 
 	if $animate_hitpause && MoveType = H
 	{
