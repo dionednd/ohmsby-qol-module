@@ -1,4 +1,4 @@
-### OHMSBY Style Quality Of Life Patches v0.0.3
+### OHMSBY Style Quality Of Life Patches v0.0.4
 
 ---
 
